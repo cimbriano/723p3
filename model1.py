@@ -48,9 +48,16 @@ def alignSentencePair(ttable, E, F):
 def addFractionalCounts(ttable, E, F, al):
     for n in al.iterkeys():
 
+        if E[n] not in ttable:
+            ttable[E[n]] = Counter()
 
         ### TODO ===================================================================
-        util.raiseNotDefined()
+        for m in al[n]:
+            prob = al[n][m]
+
+            if F[m] not in ttable[E[n]]:
+                ttable[E[n]][F[m]] = 0.0
+            ttable[E[n]][F[m]] += prob
 
 
 
