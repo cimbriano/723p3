@@ -17,18 +17,43 @@ def alignSentencePair(ttable, E, F):
     #  where const ensures that sum_n al[n][m] = 1 for all m
     for n in range(N):
         al[n] = Counter()
-    ### TODO: YOUR CODE HERE
-    util.raiseNotDefined()
+
+
+
+    ### TODO =======================================================================
+    for n in range(N):
+        for m in range(M):
+            prob = ttable[E[n]][F[m]]
+            al[n][m] = prob
+
+
+    sums = {}
+    for m in range(M):
+        sums[m] = 0.0
+        for n in range(N):
+            sums[m] += al[n][m]
+    for n in range(N):
+        for m in range(M):
+            al[n][m] /= sums[m]
+
+
+
+
 
     return al
 
 # given a ttable (as above), two sentences (as above) and an alignment
-# (as *created* above), add practional counts to the ttable
+# (as *created* above), add fractional counts to the ttable
 # corresponding to the aligned words
 def addFractionalCounts(ttable, E, F, al):
     for n in al.iterkeys():
-        ### TODO: YOUR CODE HERE
+
+
+        ### TODO ===================================================================
         util.raiseNotDefined()
+
+
+
 
 def singleEMStep(ttable, corpus, printAlignments=False):
     newTTable = {}
