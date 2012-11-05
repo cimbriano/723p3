@@ -22,7 +22,10 @@ def simpleEFeatures(w, wprob):
     # for example, on the word "happiness", generate "pre_ha" and
     # "suf_ss" as features.
     ### TODO: YOUR CODE HERE
-    util.raiseNotDefined()
+
+    
+    feats['pre_' + w[:2]]  = 1
+    feats['suf_' + w[-2:]] = 1
 
     return feats
 
@@ -40,7 +43,10 @@ def simpleFFeatures(doc, i, j):
     # this word and a second feature for the two character suffix; same
     # deal about pre_ and suf_
     ### TODO: YOUR CODE HERE
-    util.raiseNotDefined()
+    #util.raiseNotDefined()
+
+    feats['pre_' + w[:2]]  = 1
+    feats['suf_' + w[-2:]] = 1
 
     # generate features corresponding to the OTHER words in this
     # sentence.  for some other word "w", create a feature of the form
@@ -48,7 +54,32 @@ def simpleFFeatures(doc, i, j):
     # "the") appears twice in the context, the feature sc_the should
     # have value two.
     ### TODO: YOUR CODE HERE
-    util.raiseNotDefined()
+    #
+
+
+    for idx in range(len(doc[i])):
+        word = doc[i][idx]
+        # word != w ? what if it apears with itself?
+        if idx == j: continue
+
+        if w == "," or w == '.' or w == '?' or w == ':' or w == ";" or w =='"' or w == "'":
+            continue
+
+        feat_name = 'sc_' + word
+
+        if feat_name not in feats:
+            feats[feat_name] = 1
+        else:
+            feats[feat_name] += 1
+    # '''
+    # print
+    # print doc[i]
+    # for key in feats:
+    #     print key + ' :' + str(feats[key])
+
+    # print 
+    # print
+    # ''' 
 
     return feats
 

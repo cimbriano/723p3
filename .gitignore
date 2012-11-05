@@ -3,3 +3,7 @@
 
 # Python
 *.pyc
+
+# VW
+*_vw.*
+*_output
