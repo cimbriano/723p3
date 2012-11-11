@@ -3,6 +3,8 @@ import os
 from util import *
 from wsddata import *
 
+from EditDistance import edist
+
 # simpleEFeatures(w) takes a word (in English) and generates relevant
 # features.  At the very least, this should include the word identity
 # as a feature.  You should also make it include prefix (two
@@ -62,24 +64,12 @@ def simpleFFeatures(doc, i, j):
         # word != w ? what if it apears with itself?
         if idx == j: continue
 
-        if w == "," or w == '.' or w == '?' or w == ':' or w == ";" or w =='"' or w == "'":
-            continue
-
         feat_name = 'sc_' + word
 
         if feat_name not in feats:
             feats[feat_name] = 1
         else:
             feats[feat_name] += 1
-    # '''
-    # print
-    # print doc[i]
-    # for key in feats:
-    #     print key + ' :' + str(feats[key])
-
-    # print 
-    # print
-    # ''' 
 
     return feats
 
@@ -102,18 +92,89 @@ def simplePairFeatures(doc, i, j, ew, wprob):
 
 def complexEFeatures(w, wprob):
     feats = Counter()
+
+    # Simple Features
+    feats['w_' + w] = 1
+    feats['wlogprob'] = log(wprob)
+    feats['pre_' + w[:2]]  = 1
+    feats['suf_' + w[-2:]] = 1
+
+
+
+
+
+
+
+
     return feats
 
-def complexFFeatures(doc, i, j):
+def complexFFeatures(doc, i, j, tree=None):
     feats = Counter()
+
+    # Simple Features
+    w = doc[i][j]
+
+    feats[w] = 1
+    feats['pre_' + w[:2]]  = 1
+    feats['suf_' + w[-2:]] = 1
+
+    for idx in range(len(doc[i])):
+        word = doc[i][idx]
+        if idx == j: continue
+        feat_name = 'sc_' + word
+        if feat_name not in feats:
+            feats[feat_name] = 1
+        else:
+            feats[feat_name] += 1
+
+    #ctxtRange = 10
+    for sentence_idx in range(len(doc)-1):
+        if sentence_idx < 0 or sentence_idx >= len(doc) or sentence_idx == i:
+            continue
+        for w in doc[sentence_idx]:
+            feat_name = 'dc_' + w
+            if feat_name not in feats:
+                feats[feat_name] = 1
+            else:
+                feats[feat_name] += 1
+
+
+
+    # Neighbor Context Feature: Word immediately to left and right
+    if (j - 1) > 0:
+        left_word = doc[i][j-1]
+        feat_name = 'ln_' + left_word
+        feats[feat_name] = 1
+
+    if (j + 1) < len(doc[i]):
+        right_word = doc[i][j+1]
+        feat_name = 'rn_' + right_word
+        feats[feat_name] = 1
+
+
     return feats
 
-def complexPairFeatures(doc, i, j, ew, wprob):
+def complexPairFeatures(doc, i, j, ew, wprob, tree=None):
+    fw = doc[i][j]
     feats = Counter()
+
+    # Simple Features
+    if fw == ew:
+        feats['w_eq'] = 1
+
+    # Edit Distance:
+    editDist = edist(ew, fw)
+    if editDist != 0:
+        feats['edist'] = 1 / editDist
+    else:
+        feats['edist'] = 1
+
+
+
     return feats
 
 if __name__ == "__main__":
-    (train_acc, test_acc, test_pred) = runExperiment('Science.tr', 'Science.de', simpleFFeatures, simpleEFeatures, simplePairFeatures, quietVW=True)
+    (train_acc, test_acc, test_pred) = runExperiment('Science.tr', 'Science.de', complexFFeatures, complexEFeatures, complexPairFeatures, quietVW=True)
     print 'training accuracy =', train_acc
     print 'testing  accuracy =', test_acc
     h = open('wsd_output', 'w')
@@ -121,6 +182,3 @@ if __name__ == "__main__":
         h.write(str(x[0]))
         h.write('\n')
     h.close()
-
-
-    
