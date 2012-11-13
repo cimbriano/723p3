@@ -3,7 +3,7 @@ import os
 from math import *
 from util import *
 
-vw = '/home/hal/bin/vw'
+vw = './lib/VW/vowpalwabbit/vw'
 
 # readWSDCorpus: returns the a LIST of (labelInfo, doc) pairs, where
 # labelInfo is a four-tuple (sent #, word #, fWord, eWord).  here,
