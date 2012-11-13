@@ -99,8 +99,27 @@ def complexEFeatures(w, wprob):
     feats['pre_' + w[:2]]  = 1
     feats['suf_' + w[-2:]] = 1
 
+    # Check for particular suffixes
+    #
+    # 1 letter
+    one = w[-1]
+    if one in ['s', 'd']:
+        feats['1_suf_' + one ] = 1
 
+    # 2 letter
+    two = w[-2:]
+    if two in ['es', 'ed', 'ly']:
+        feats['2_suf_' + two] = 1
 
+    # 3 letter
+    three = w[-3:]
+    if three in ['ing', 'ity', 'ize', 'ies']:
+        feats['3_suf_' + three] = 1
+
+    # 4 letter
+    four = w[-4:]
+    if four in ['ment', 'tion', 'ness']:
+        feats['f_suf_' + four] = 1
 
 
 
@@ -128,6 +147,8 @@ def complexFFeatures(doc, i, j, tree=None):
             feats[feat_name] += 1
 
     #ctxtRange = 10
+    # Document Context: For every word in the document, the feature is the number of times
+    #   that word appears
     for sentence_idx in range(len(doc)-1):
         if sentence_idx < 0 or sentence_idx >= len(doc) or sentence_idx == i:
             continue
@@ -137,7 +158,6 @@ def complexFFeatures(doc, i, j, tree=None):
                 feats[feat_name] = 1
             else:
                 feats[feat_name] += 1
-
 
 
     # Neighbor Context Feature: Word immediately to left and right
@@ -150,7 +170,6 @@ def complexFFeatures(doc, i, j, tree=None):
         right_word = doc[i][j+1]
         feat_name = 'rn_' + right_word
         feats[feat_name] = 1
-
 
     return feats
 
